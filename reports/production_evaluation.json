@@ -5,8 +5,8 @@
   "architecture": "forensic-descriptor",
   "threshold": 0.4821135216450504,
   "n_evaluated": 3000,
-  "seconds": 13.8,
-  "ms_per_image": 4.61,
+  "seconds": 19.6,
+  "ms_per_image": 6.53,
   "metrics": {
     "n": 3000,
     "pos_rate": 0.5,
@@ -34,11 +34,11 @@
         1364
       ]
     ],
-    "roc_auc": 0.9512751111111111,
-    "pr_auc": 0.9386599654470844,
-    "average_precision": 0.9386599654470844,
-    "log_loss": 0.3732775054132886,
-    "brier": 0.10873768183951718,
+    "roc_auc": 0.9512764444444444,
+    "pr_auc": 0.9386627498447211,
+    "average_precision": 0.9386627498447211,
+    "log_loss": 0.37327462728848826,
+    "brier": 0.1087364525025348,
     "eer": 0.11099999999999997,
     "eer_threshold": 0.50343016910255
   },
@@ -57,8 +57,8 @@
     },
     "roc_auc": {
       "reported": 0.9512746666666666,
-      "recomputed": 0.9512751111111111,
-      "abs_delta": 4.4444444446956055e-07,
+      "recomputed": 0.9512764444444444,
+      "abs_delta": 1.77777777776722e-06,
       "agree": true
     },
     "recall": {
