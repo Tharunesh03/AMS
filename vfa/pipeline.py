@@ -392,7 +392,7 @@ def promote_to_production(
     (models_dir / "metrics.json").write_text(json.dumps(metrics_payload, indent=2, default=str))
 
     card = {
-        "model_name": f"ams-ai-detector-{winner.name}",
+        "model_name": f"vfa-ai-detector-{winner.name}",
         "model_version": VERSION,
         "task": "binary AI/synthetic image detection (real vs generated)",
         "selected_from": [r["name"] for r in pool],
@@ -419,7 +419,7 @@ def promote_to_production(
         "test_evaluations": 1,
         "descriptor": summaries.get(winner.name, {}).get("descriptor"),
         "feature_dim": summaries.get(winner.name, {}).get("feature_dim"),
-        "load_with": "python -m ams predict <image>   |   from ams.predictor import Detector; Detector(PredictorConfig()).predict_path(...)",
+        "load_with": "python -m vfa predict <image>   |   from vfa.predictor import Detector; Detector(PredictorConfig()).predict_path(...)",
         "training_date": time.strftime("%Y-%m-%d"),
         "dataset": {
             "root": str(cfg.root),
@@ -660,10 +660,10 @@ def face_model_status(db: DataBundle, winner: Candidate) -> Dict[str, object]:
             "label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the "
             "AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops "
             "themselves and face-level checks are provided by the analytical CV module "
-            "(ams.forensics: face detection, landmark geometry, visual consistency), which is explicitly "
+            "(vfa.forensics: face detection, landmark geometry, visual consistency), which is explicitly "
             "NOT a trained deepfake classifier."
         ),
         "detector_trained_on_face_crops": True,
         "identity_model_available": False,
-        "analytical_cv_module": "ams.forensics",
+        "analytical_cv_module": "vfa.forensics",
     }

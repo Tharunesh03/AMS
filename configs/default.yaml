@@ -24,7 +24,7 @@ classical: true
 deep: true
 pretrained: true            # ImageNet transfer when weights are reachable; recorded honestly when not
 deep_ids: null              # e.g. [lightcnn_32, resnet18_96] to train a subset
-epochs: null                # null = per-preset schedule (see ams/models.py CANDIDATE_PRESETS)
+epochs: null                # null = per-preset schedule (see vfa/models.py CANDIDATE_PRESETS)
 batch_size: null
 lr: null
 patience: 5                 # early stopping on validation ROC-AUC

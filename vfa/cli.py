@@ -1,4 +1,4 @@
-"""Command line: ``python -m ams <command>`` (see ``python -m ams --help``).
+"""Command line: ``python -m vfa <command>`` (see ``python -m vfa --help``).
 
     inspect     dataset inspection report only
     train       full training pipeline (same as ``python train.py``)
@@ -36,9 +36,9 @@ def _load_yaml_config(path: Optional[str]) -> Dict[str, object]:
 
 # --------------------------------------------------------------------------- inspect
 def cmd_inspect(args) -> int:
-    from ams.dataset import ensure_extracted
-    from ams.reporting import write_dataset_report
-    from ams.trainer import build_data
+    from vfa.dataset import ensure_extracted
+    from vfa.reporting import write_dataset_report
+    from vfa.trainer import build_data
 
     cfg = _load_yaml_config(args.config)
     root = Path(args.root or cfg.get("root", "data"))
@@ -76,8 +76,8 @@ def cmd_train(args) -> int:
 
 # ----------------------------------------------------------------------- reference
 def cmd_reference(args) -> int:
-    from ams.explain import build_reference
-    from ams.trainer import build_data
+    from vfa.explain import build_reference
+    from vfa.trainer import build_data
 
     cfg = _load_yaml_config(args.config)
     out = Path(args.out or ROOT / "models" / "reference_stats.json")
@@ -95,10 +95,10 @@ def cmd_reference(args) -> int:
 def cmd_evaluate(args) -> int:
     import numpy as np
 
-    from ams.metrics import binary_metrics, reliability_table
-    from ams.predictor import Detector, PredictorConfig
-    from ams.reporting import plot_confusion, plot_reliability
-    from ams.trainer import build_data
+    from vfa.metrics import binary_metrics, reliability_table
+    from vfa.predictor import Detector, PredictorConfig
+    from vfa.reporting import plot_confusion, plot_reliability
+    from vfa.trainer import build_data
 
     cfg = _load_yaml_config(args.config)
     db = build_data(
@@ -193,7 +193,7 @@ def cmd_evaluate(args) -> int:
 
 # ------------------------------------------------------------------------- predict
 def cmd_predict(args) -> int:
-    from ams.predictor import Detector, PredictorConfig, ModelNotTrained
+    from vfa.predictor import Detector, PredictorConfig, ModelNotTrained
 
     try:
         det = Detector(PredictorConfig(models_dir=Path(args.models_dir), enable_face=not args.no_face, enable_gradcam=not args.no_cam))
@@ -221,7 +221,7 @@ def cmd_predict(args) -> int:
 
 
 def cmd_demo(args) -> int:
-    from ams.predictor import Detector, PredictorConfig
+    from vfa.predictor import Detector, PredictorConfig
 
     det = Detector(PredictorConfig(models_dir=Path(args.models_dir)))
     man = Path(args.samples_dir) / "manifest.json"
@@ -247,13 +247,13 @@ def cmd_demo(args) -> int:
 def cmd_serve(args) -> int:
     import uvicorn
 
-    print(f"[ams] serving http://{args.host}:{args.port} (model dir: {args.models_dir}) - no training happens here")
+    print(f"[vfa] serving http://{args.host}:{args.port} (model dir: {args.models_dir}) - no training happens here")
     uvicorn.run("app.server:app", host=args.host, port=args.port, reload=args.reload, log_level=args.log_level)
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="ams", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="vfa", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("inspect", help="dataset inspection report")

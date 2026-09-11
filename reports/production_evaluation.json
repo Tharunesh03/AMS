@@ -1,12 +1,12 @@
 {
-  "production_model": "ams-ai-detector-svm_forensic",
+  "production_model": "vfa-ai-detector-svm_forensic",
   "full_test_split": true,
   "agreement_tolerance": 0.0001,
   "architecture": "forensic-descriptor",
   "threshold": 0.4821135216450504,
   "n_evaluated": 3000,
-  "seconds": 14.3,
-  "ms_per_image": 4.77,
+  "seconds": 13.8,
+  "ms_per_image": 4.61,
   "metrics": {
     "n": 3000,
     "pos_rate": 0.5,

@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from ams.features import FeatureOptions, extract_features
-from ams.metrics import binary_metrics, expected_calibration_error, multiclass_metrics, select_threshold
-from ams.selection import Candidate, score_pool, selection_rationale
+from vfa.features import FeatureOptions, extract_features
+from vfa.metrics import binary_metrics, expected_calibration_error, multiclass_metrics, select_threshold
+from vfa.selection import Candidate, score_pool, selection_rationale
 
 
 # --------------------------------------------------------------------------- features
@@ -183,7 +183,7 @@ def test_empty_pool_has_no_selection():
 
 # --------------------------------------------------------------------------- labels
 def test_generator_labels_absent_in_a_two_class_tree(tmp_path):
-    from ams.labels import discover_generator_labels
+    from vfa.labels import discover_generator_labels
 
     (tmp_path / "real").mkdir()
     (tmp_path / "fake").mkdir()
@@ -197,7 +197,7 @@ def test_generator_labels_absent_in_a_two_class_tree(tmp_path):
 
 
 def test_generator_labels_discovered_from_subdirectories(tmp_path):
-    from ams.labels import discover_generator_labels
+    from vfa.labels import discover_generator_labels
 
     for gen in ("midjourney", "stable_diffusion"):
         d = tmp_path / "ai" / gen
@@ -211,7 +211,7 @@ def test_generator_labels_discovered_from_subdirectories(tmp_path):
 
 def test_generator_classes_below_the_minimum_are_not_invented(tmp_path):
     """One usable generator class is not a multi-class task -> unavailable, honestly."""
-    from ams.labels import discover_generator_labels
+    from vfa.labels import discover_generator_labels
 
     for gen, n in (("midjourney", 40), ("flux", 3)):
         d = tmp_path / "ai" / gen
@@ -226,7 +226,7 @@ def test_generator_classes_below_the_minimum_are_not_invented(tmp_path):
 
 # ------------------------------------------------------------------------ forensics
 def test_forensics_reports_structure_and_is_honest_about_being_untrained(tmp_path):
-    from ams.forensics import FaceAnalyzer
+    from vfa.forensics import FaceAnalyzer
 
     rng = np.random.default_rng(4)
     img = (rng.random((160, 160, 3)) * 60 + 120).astype(np.uint8)
@@ -240,7 +240,7 @@ def test_forensics_reports_structure_and_is_honest_about_being_untrained(tmp_pat
 
 
 def test_forensics_on_tiny_and_extreme_inputs(tmp_path):
-    from ams.forensics import FaceAnalyzer
+    from vfa.forensics import FaceAnalyzer
 
     a = FaceAnalyzer()
     for shape in [(6, 6, 3), (32, 32, 3), (400, 60, 3)]:
@@ -250,7 +250,7 @@ def test_forensics_on_tiny_and_extreme_inputs(tmp_path):
 
 def test_forensics_flags_an_embedded_rectangle(tmp_path):
     """A pasted block with different noise statistics should raise a boundary/texture flag."""
-    from ams.forensics import FaceAnalyzer
+    from vfa.forensics import FaceAnalyzer
 
     rng = np.random.default_rng(6)
     img = (rng.random((256, 256, 3)) * 12 + 122).astype(np.uint8)          # smooth surround
@@ -264,8 +264,8 @@ def test_forensics_flags_an_embedded_rectangle(tmp_path):
 def test_gradcam_targets_found_for_cnn_and_absent_for_linear():
     import torch.nn as nn
 
-    from ams.gradcam import find_cam_targets
-    from ams.models import ModelSpec, build_model
+    from vfa.gradcam import find_cam_targets
+    from vfa.models import ModelSpec, build_model
 
     assert find_cam_targets(build_model(ModelSpec(name="lightcnn", input_size=32)))
     assert find_cam_targets(nn.Sequential(nn.Flatten(), nn.Linear(4, 1))) == []
@@ -274,8 +274,8 @@ def test_gradcam_targets_found_for_cnn_and_absent_for_linear():
 def test_gradcam_produces_a_real_spatial_map():
     import torch
 
-    from ams.gradcam import GradCAM
-    from ams.models import LightCNN
+    from vfa.gradcam import GradCAM
+    from vfa.models import LightCNN
 
     torch.manual_seed(0)
     m = LightCNN(width=8).eval()
@@ -288,7 +288,7 @@ def test_gradcam_produces_a_real_spatial_map():
     assert res.overlay.shape == (32, 32, 3) and res.overlay.dtype == np.uint8
     assert res.target_layer
 
-    from ams.gradcam import cam_bbox
+    from vfa.gradcam import cam_bbox
 
     bb = cam_bbox(res.heatmap)
     assert bb and len(bb) == 4 and 0 <= bb[0] < bb[2] <= 1
@@ -298,7 +298,7 @@ def test_gradcam_reports_unavailable_for_non_convolutional_models():
     import torch
     import torch.nn as nn
 
-    from ams.gradcam import GradCAM
+    from vfa.gradcam import GradCAM
 
     class LinearOnly(nn.Module):
         def __init__(self):
@@ -315,7 +315,7 @@ def test_gradcam_reports_unavailable_for_non_convolutional_models():
 # ---------------------------------------------------- transfer-learning bookkeeping
 def test_pretrained_flag_reflects_whether_weights_actually_loaded(monkeypatch):
     """The recorded flag must come from the model, not from what was requested."""
-    from ams import models as M
+    from vfa import models as M
 
     import torchvision
 
@@ -336,6 +336,6 @@ def test_pretrained_flag_reflects_whether_weights_actually_loaded(monkeypatch):
 
 
 def test_architecture_without_imagenet_weights_says_so():
-    from ams.models import LightCNN
+    from vfa.models import LightCNN
 
     assert LightCNN().pretrained_applied is False

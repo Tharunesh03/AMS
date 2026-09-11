@@ -2,7 +2,7 @@
 """Regenerate the results section of README.md from ``models/metrics.json``.
 
 The README promises that its numbers come from the artifacts, so they are literally copied from
-them: run this after ``python train.py`` (and after ``python -m ams evaluate``) and the section
+them: run this after ``python train.py`` (and after ``python -m vfa evaluate``) and the section
 between ``<!-- RESULTS:BEGIN -->`` / ``<!-- RESULTS:END -->`` is rewritten. Nothing is typed by
 hand, so a stale number cannot survive a re-run.
 
@@ -167,13 +167,13 @@ def build_block(models_dir: Path) -> str:
         lines.append(
             f"* generator fingerprinting: **not trainable on this dataset** — {gen.get('reason', '')} "
             f"({gen.get('n_classes', 0)} generator classes found). The second task itself is implemented and "
-            f"tested (`ams/generator.py`, `tests/test_generator_task.py`); only the labels are missing, and "
+            f"tested (`vfa/generator.py`, `tests/test_generator_task.py`); only the labels are missing, and "
             f"no classes were invented to work around that."
         )
     face = metrics.get("face_model") or {}
     face_reason = str(face.get("reason", "")).rstrip(".")
     face_extra = "" if "analytical CV module" in face_reason else \
-        " An analytical CV module ships instead (`ams/forensics.py`), labelled as heuristics."
+        " An analytical CV module ships instead (`vfa/forensics.py`), labelled as heuristics."
     lines.append(f"* face/deepfake model: trained={face.get('trained')} — {face_reason}.{face_extra}")
     tl = metrics.get("transfer_learning") or {}
     if tl:

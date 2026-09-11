@@ -25,7 +25,7 @@ if str(ROOT) not in sys.path:
 @pytest.fixture(scope="module")
 def trained(tmp_path_factory):
     """Run the whole chain once (classical only, tiny data) and return the dirs."""
-    from ams.pipeline import PipelineConfig, run_training
+    from vfa.pipeline import PipelineConfig, run_training
     from tests.conftest import make_mini_dataset
 
     base = tmp_path_factory.mktemp("e2e")
@@ -71,7 +71,7 @@ def test_training_run_produced_the_documented_artifact_set(trained):
     metrics = json.loads((models / "metrics.json").read_text())
     info = json.loads((models / "model_info.json").read_text())
     assert metrics["selection"]["selected"] == info["architecture"] == metrics["tasks"]["ai_detector"]["selected_model"]
-    assert info["model_name"] == f"ams-ai-detector-{info['architecture']}"
+    assert info["model_name"] == f"vfa-ai-detector-{info['architecture']}"
     assert set(metrics["tasks"]["ai_detector"]["metrics"]) >= {"accuracy", "f1", "roc_auc", "precision", "recall"}
     assert metrics["tasks"]["ai_detector"]["test_evaluations"] == 1, "test set must be touched exactly once"
     assert "eval_protocol" in metrics["tasks"]["ai_detector"]
@@ -116,7 +116,7 @@ def test_reports_and_figures_are_written(trained):
 # ------------------------------------------------------------------------ predict
 @pytest.fixture(scope="module")
 def detector(trained):
-    from ams.predictor import Detector, PredictorConfig
+    from vfa.predictor import Detector, PredictorConfig
 
     return Detector(PredictorConfig(models_dir=trained["cfg"].models_dir, device="cpu"))
 
@@ -184,9 +184,9 @@ def test_evidence_points_at_the_measured_difference(detector, trained):
 # ---------------------------------------------------------------------------- api
 @pytest.fixture(scope="module")
 def client(trained):
-    os.environ["AMS_MODELS_DIR"] = str(trained["cfg"].models_dir)
-    os.environ["AMS_REPORTS_DIR"] = str(trained["cfg"].reports_dir)
-    os.environ["AMS_SAMPLES_DIR"] = str(trained["cfg"].samples_dir)
+    os.environ["VFA_MODELS_DIR"] = str(trained["cfg"].models_dir)
+    os.environ["VFA_REPORTS_DIR"] = str(trained["cfg"].reports_dir)
+    os.environ["VFA_SAMPLES_DIR"] = str(trained["cfg"].samples_dir)
     sys.modules.pop("app.server", None)
     from fastapi.testclient import TestClient
 
@@ -265,7 +265,7 @@ def test_api_never_retrains(client, trained):
 @pytest.fixture(scope="module")
 def trained_deep(tmp_path_factory):
     """Second, independent run that produces a *torch* production artifact."""
-    from ams.pipeline import PipelineConfig, run_training
+    from vfa.pipeline import PipelineConfig, run_training
     from tests.conftest import make_mini_dataset
 
     base = tmp_path_factory.mktemp("e2e_deep")
@@ -318,7 +318,7 @@ def test_deployed_torch_model_reproduces_the_training_time_scores(trained_deep):
     """`serve` must load the saved weights and produce the same numbers as the run that earned them."""
     import numpy as np
 
-    from ams.predictor import Detector, PredictorConfig
+    from vfa.predictor import Detector, PredictorConfig
 
     score_files = list(trained_deep["base"].glob("artifacts/*/deep/*/test_scores.npy"))
     assert score_files, "expected the run's held-out score file"
@@ -338,7 +338,7 @@ def test_deployed_torch_model_reproduces_the_training_time_scores(trained_deep):
 
 
 def test_gradcam_heatmap_comes_from_the_loaded_network(trained_deep):
-    from ams.predictor import Detector, PredictorConfig
+    from vfa.predictor import Detector, PredictorConfig
 
     det = Detector(PredictorConfig(models_dir=trained_deep["cfg"].models_dir))
     img = sorted((trained_deep["data"] / "FAKE").glob("*.jpg"))[0]
@@ -367,9 +367,9 @@ def test_gradcam_heatmap_comes_from_the_loaded_network(trained_deep):
 def test_api_returns_saliency_and_face_module_honestly_for_deep_model(trained_deep):
     import os
 
-    os.environ["AMS_MODELS_DIR"] = str(trained_deep["cfg"].models_dir)
-    os.environ["AMS_REPORTS_DIR"] = str(trained_deep["cfg"].reports_dir)
-    os.environ["AMS_SAMPLES_DIR"] = str(trained_deep["cfg"].samples_dir)
+    os.environ["VFA_MODELS_DIR"] = str(trained_deep["cfg"].models_dir)
+    os.environ["VFA_REPORTS_DIR"] = str(trained_deep["cfg"].reports_dir)
+    os.environ["VFA_SAMPLES_DIR"] = str(trained_deep["cfg"].samples_dir)
     sys.modules.pop("app.server", None)
     from fastapi.testclient import TestClient
 

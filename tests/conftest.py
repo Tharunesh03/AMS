@@ -51,7 +51,7 @@ def mini_root(tmp_path_factory) -> Path:
 
 @pytest.fixture(scope="session")
 def mini_db(mini_root, tmp_path_factory):
-    from ams.trainer import build_data
+    from vfa.trainer import build_data
 
     return build_data(
         root=mini_root,

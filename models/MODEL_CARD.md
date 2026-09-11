@@ -1,6 +1,6 @@
 # MODEL CARD
 
-- **model_name**: ams-ai-detector-svm_forensic
+- **model_name**: vfa-ai-detector-svm_forensic
 - **model_version**: 0.1.0
 - **task**: binary AI/synthetic image detection (real vs generated)
 - **architecture**: svm_forensic

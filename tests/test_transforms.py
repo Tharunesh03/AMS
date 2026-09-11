@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import torch
 
-from ams.transforms import AugmentConfig, ImageTransform, dataset_stats, resize_any, to_chw_float01
+from vfa.transforms import AugmentConfig, ImageTransform, dataset_stats, resize_any, to_chw_float01
 
 
 def _rng(seed=0):

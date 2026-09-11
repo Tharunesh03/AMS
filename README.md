@@ -1,9 +1,11 @@
-# AMS — AI-Image Authenticity Detector
+# Visual Forensic AI
 
-Supervised **REAL vs AI-GENERATED** image classification trained on the dataset shipped in this
-repository, with a model-comparison study, Grad-CAM saliency, a measurement-based explanation
-engine, an analytical (non-classifier) face module, a results dashboard and a CPU-only FastAPI
-service.
+*Supervised image-provenance analysis: is this image an authentic capture or AI-generated?*
+
+Trained on the dataset shipped in this repository, with a full model-comparison study, Grad-CAM
+saliency, a measurement-based explanation engine, an analytical (non-classifier) face module, a
+multi-page dashboard and a CPU-only FastAPI service. The Python package is `vfa`, the CLI is
+`python -m vfa`, and the web app is "Visual Forensic AI".
 
 Everything here is CPU-only, uses free/open libraries and no external "AI detection" API. No number
 in the UI, the reports or the model card is invented: metrics come from measured evaluation on the
@@ -14,7 +16,7 @@ are computed from the uploaded pixels.
 
 ## 1. What the dataset actually contains (inspected, not assumed)
 
-`python -m ams inspect` (or step 1 of `train.py`) walks every file before anything is trained and
+`python -m vfa inspect` (or step 1 of `train.py`) walks every file before anything is trained and
 writes `reports/eda.md` + `models/dataset_inspection.json`. Measured on this corpus:
 
 | property | measured value |
@@ -91,7 +93,7 @@ in `artifacts/full/` for auditing; they are never shipped.
 
 ## 4. Generator fingerprinting — reported, not fabricated
 
-`ams/labels.py` looks for a second label dimension in two places (nested directories under a class,
+`vfa/labels.py` looks for a second label dimension in two places (nested directories under a class,
 generator tokens in file names) and requires ≥ 2 classes with ≥ 25 images. On this corpus it finds
 nothing, so the outcome is recorded rather than invented:
 
@@ -107,7 +109,7 @@ Consequences on **this** corpus: there is no generator model to gate, so the `Ge
 `generator task: not trainable on this dataset (recorded, nothing invented)`.
 
 **The second task is implemented, it is only the labels that are missing.** With per-generator folders
-present (`data/FAKE/stable_diffusion/*.jpg`), `ams/generator.py` builds an independent training bundle
+present (`data/FAKE/stable_diffusion/*.jpg`), `vfa/generator.py` builds an independent training bundle
 (generator-scoped capture groups, the same group-atomic 70/15/15 rule, re-measured normalisation), trains
 the same candidate pool on it, selects with the multi-class weights
 `0.35·macro-F1 + 0.20·weighted-F1 + 0.15·accuracy + 0.10·top-3 + 0.10·speed + 0.10·efficiency`
@@ -124,7 +126,7 @@ Disable the step with `python train.py --no-generator-task`.
 ## 5. Face analysis (§11) — an analytical module, explicitly not a trained classifier
 
 The corpus has two classes (authentic/synthetic *face crops*) and no "manipulated-face" dimension, so
-a second "deepfake face" classifier would be a rename of the detector. `ams/forensics.py` instead
+a second "deepfake face" classifier would be a rename of the detector. `vfa/forensics.py` instead
 measures classical CV signals: Haar-cascade face localisation, eye-line geometry plausibility,
 left/right mirror correlation, high-pass/micro-texture energy, per-region sharpness dispersion,
 flat-region fraction, boundary gradient continuity at the face box, illumination-slope agreement with
@@ -135,13 +137,13 @@ labels that fact in `summary.region_source` instead of pretending a detection ha
 
 ## 6. Explanations
 
-* **Grad-CAM** (`ams/gradcam.py`) differentiates the *actual* selected checkpoint: the last
+* **Grad-CAM** (`vfa/gradcam.py`) differentiates the *actual* selected checkpoint: the last
   convolutional activation of the loaded model, weighted by the gradient of the synthetic-class logit.
   The heatmap is produced at the model grid and upsampled with a note about that; the response
   includes the target layer name, peak/spread/mass statistics, a unit-coordinate bbox and the overlay
   PNG. If the selected model is a classical descriptor classifier there is no convolutional
   activation, and the API says so instead of faking a map.
-* **Evidence engine** (`ams/explain.py`) measures 10 image signals, compares them with per-class
+* **Evidence engine** (`vfa/explain.py`) measures 10 image signals, compares them with per-class
   distributions estimated on the **training split only** (`models/reference_stats.json`), grades each
   as LOW/MEDIUM/HIGH (combining the deviation of this image and the measured discriminative power of
   the signal) and writes both a plain-language and a technical paragraph.
@@ -149,12 +151,13 @@ labels that fact in `summary.region_source` instead of pretending a detection ha
 ## 7. Repository layout
 
 ```
-ams/            dataset.py splitting.py features.py models.py transforms.py trainer.py
+vfa/            dataset.py splitting.py features.py models.py transforms.py trainer.py
                 metrics.py selection.py labels.py generator.py gradcam.py explain.py
                 forensics.py predictor.py pipeline.py reporting.py cli.py
 train.py        single entry point for the whole chain
 configs/        default.yaml (full run), smoke.yaml (seconds-long sanity run)
-app/            server.py (FastAPI) + static/ dashboard (no build step, no CDN)
+app/            server.py (FastAPI routing + JSON API) + static/ 6 files: the 5 pages,
+                styles.css (light + dark tokens) and common.js (shared rendering, no framework)
 tests/          unit + integration tests, incl. two real end-to-end training runs
 models/         SHIPPED artifacts: ai_detector/{model.pth|model.joblib,classes.json,...},
                 generator_classifier/ (only when the dataset carries per-generator labels),
@@ -181,16 +184,31 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m uvicorn app.server:app --host 0.0.0.0 --port 8000    # dashboard + API
 ```
 
+### Pages
+
+| route | what is there |
+|---|---|
+| `/` | overview and navigation - what the tool can and cannot do, current model status |
+| `/analyze` | drop/paste/pick an image: verdict, probability vs threshold, measured evidence, saliency, face checks, generator identification |
+| `/model` | the model card: how it was selected, its limits, the honesty statements, provenance of the loaded weights |
+| `/metrics` | every candidate measured on the same splits, the selection arithmetic, reliability, ablations, secondary tasks |
+| `/reports` | the generated reports (`eda.md`, `model_comparison.md`, `training_report.md`, `production_evaluation.md`) with their figures |
+| `/docs` | FastAPI's own OpenAPI page for the JSON API |
+
+Light and dark themes are both first-class: the app follows the OS setting and remembers an
+override (persisted in `localStorage` as `vfa-theme`). It is a plain HTML/CSS/JS bundle - no build
+step, no CDN, no framework.
+
 CLI (same code paths as the app):
 
 ```bash
-python -m ams inspect            # dataset validation report only
-python -m ams train --smoke      # tiny end-to-end run
-python -m ams reference          # rebuild the evidence-engine reference statistics
-python -m ams evaluate           # re-measure the shipped artifact on the test split
-python -m ams predict path/to.jpg --gradcam
-python -m ams demo               # predict the bundled samples
-python -m ams serve --port 8000
+python -m vfa inspect            # dataset validation report only
+python -m vfa train --smoke      # tiny end-to-end run
+python -m vfa reference          # rebuild the evidence-engine reference statistics
+python -m vfa evaluate           # re-measure the shipped artifact on the test split
+python -m vfa predict path/to.jpg --gradcam
+python -m vfa demo               # predict the bundled samples
+python -m vfa serve --port 8000
 ```
 
 Any config key can be overridden: `python train.py --set deep_ids=[lightcnn_32] --set epochs=3`.
@@ -203,7 +221,7 @@ task entirely, `--pretrained` / `--no-pretrained` control the ImageNet-weight re
 
 | endpoint | purpose |
 |---|---|
-| `GET /` | dashboard (upload/drop/paste, comparison table, model card, reports) |
+| `GET /`, `GET /analyze`, `GET /model`, `GET /metrics`, `GET /reports` | the five pages; each serves one file from `app/static` through a whitelist, and each carries the same navigation, model-status pills and theme control |
 | `POST /api/detect` | multipart image → probability, verdict, threshold, Grad-CAM overlay, evidence, face analysis, generator identification (only when a generator model was trainable), timings |
 | `GET /api/model` | model card, classes, selection reason, full comparison, task statuses |
 | `GET /api/metrics` | `models/metrics.json` verbatim |
@@ -218,7 +236,7 @@ explicit warning in the response.
 ### Deployment (free tier, CPU only)
 
 `Dockerfile` (python:3.11-slim, no CUDA) and `render.yaml` (Render free web service, health check on
-`/api/health`) are included. `python -m ams serve` binds `0.0.0.0:$PORT` for platform-provided
+`/api/health`) are included. `python -m vfa serve` binds `0.0.0.0:$PORT` for platform-provided
 ports. Nothing in the request path needs a GPU, a paid API or more RAM than a 512 MB instance.
 
 ## 9. Measured results
@@ -263,8 +281,8 @@ Confusion over 3000 test images, rows = true class, columns = predicted (`real`,
 
 ## 9.3 Secondary tasks
 
-* generator fingerprinting: **not trainable on this dataset** — the provided dataset carries exactly one label dimension (the real/ai class folders); no per-generator sub-directories and no generator tokens in file names, so generator fingerprinting cannot be trained - it would require inventing labels (0 generator classes found). The second task itself is implemented and tested (`ams/generator.py`, `tests/test_generator_task.py`); only the labels are missing, and no classes were invented to work around that.
-* face/deepfake model: trained=False — the corpus holds exactly two classes (real / synthetic face crops) and no 'manipulated' label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops themselves and face-level checks are provided by the analytical CV module (ams.forensics: face detection, landmark geometry, visual consistency), which is explicitly NOT a trained deepfake classifier.
+* generator fingerprinting: **not trainable on this dataset** — the provided dataset carries exactly one label dimension (the real/ai class folders); no per-generator sub-directories and no generator tokens in file names, so generator fingerprinting cannot be trained - it would require inventing labels (0 generator classes found). The second task itself is implemented and tested (`vfa/generator.py`, `tests/test_generator_task.py`); only the labels are missing, and no classes were invented to work around that.
+* face/deepfake model: trained=False — the corpus holds exactly two classes (real / synthetic face crops) and no 'manipulated' label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops themselves and face-level checks are provided by the analytical CV module (vfa.forensics: face detection, landmark geometry, visual consistency), which is explicitly NOT a trained deepfake classifier.
 * transfer learning: requested=True, weights actually loaded for `none`, every deep candidate in the selection pool (6) trained from scratch, frozen-backbone arms applied `none` — transfer learning was requested but the ImageNet weight host was unreachable from this environment (architecture has no published ImageNet weights; trained from scratch by design ; requested but unreachable (URLError: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:992)>); from scratch); freezing a randomly initialised backbone would only train a head on random features, so no arm was frozen and every deep candidate trained from scratch with all layers trainable. This is recorded per candidate in pretrained_note rather than hidden.
 
 ## 9.4 Ablations (reported, never eligible for selection)

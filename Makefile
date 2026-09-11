@@ -17,13 +17,13 @@ train:           ## full dataset inspection + candidate comparison + production 
 	$(PY) train.py --config configs/default.yaml
 
 reference:       ## rebuild models/reference_stats.json (evidence engine reference)
-	$(PY) -m ams reference
+	$(PY) -m vfa reference
 
 evaluate:        ## re-measure the production artifact on the held-out test split
-	$(PY) -m ams evaluate
+	$(PY) -m vfa evaluate
 
 demo:            ## predict the bundled samples from the terminal
-	$(PY) -m ams demo
+	$(PY) -m vfa demo
 
 serve:           ## run the FastAPI app on :8000 (loads models/, never retrains)
 	$(PY) -m uvicorn app.server:app --host 0.0.0.0 --port 8000
@@ -32,7 +32,7 @@ test:            ## unit + integration tests
 	$(PY) -m pytest -q
 
 docker:          ## build the CPU-only deployment image
-	docker build -t ams-ai-detector .
+	docker build -t vfa-ai-detector .
 
 clean:
 	rm -rf artifacts reports/figures models/ai_detector __pycache__ .pytest_cache

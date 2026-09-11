@@ -3,9 +3,9 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ams-ai-detector"
+name = "visual-forensic-ai"
 version = "0.1.0"
-description = "Supervised AI-image detector (REAL vs AI-GENERATED) with Grad-CAM saliency and an analytical face module, trained on the repository dataset"
+description = "Visual Forensic AI - supervised REAL vs AI-GENERATED image analysis with measured evidence, Grad-CAM saliency, optional generator fingerprinting and an analytical face module"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -26,10 +26,10 @@ serve = ["fastapi>=0.111", "uvicorn[standard]>=0.30", "python-multipart>=0.0.9",
 dev = ["pytest>=8.0", "httpx>=0.27"]
 
 [project.scripts]
-ams = "ams.cli:main"
+vfa = "vfa.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["ams*", "app*"]
+include = ["vfa*", "app*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

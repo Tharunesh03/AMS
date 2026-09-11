@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from ams.splitting import group_leakage_report, stratified_grouped_split
+from vfa.splitting import group_leakage_report, stratified_grouped_split
 
 
 def _synthetic(n_per_class=2000, groups_per_class=200, frames=10):

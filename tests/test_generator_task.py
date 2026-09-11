@@ -64,7 +64,7 @@ def gen_root(tmp_path_factory) -> Path:
 
 @pytest.fixture(scope="module")
 def gen_db(gen_root, tmp_path_factory):
-    from ams.trainer import build_data
+    from vfa.trainer import build_data
 
     return build_data(
         root=gen_root,
@@ -80,7 +80,7 @@ def gen_db(gen_root, tmp_path_factory):
 
 # --------------------------------------------------------------------- label plumbing
 def test_per_image_labels_come_from_the_directory_not_from_a_guess(gen_db):
-    from ams.generator import image_generator_labels
+    from vfa.generator import image_generator_labels
 
     ids, index = image_generator_labels(gen_db.paths, list(GENERATORS))
     assert len(ids) == len(gen_db.labels)
@@ -96,8 +96,8 @@ def test_per_image_labels_come_from_the_directory_not_from_a_guess(gen_db):
 
 
 def test_generator_bundle_is_group_atomic_and_reuses_the_split_rules(gen_db, gen_root):
-    from ams.generator import build_generator_bundle
-    from ams.labels import discover_generator_labels
+    from vfa.generator import build_generator_bundle
+    from vfa.labels import discover_generator_labels
 
     gen = discover_generator_labels(gen_root, gen_db.classes)
     assert gen.available is True, gen.reason
@@ -120,7 +120,7 @@ def test_generator_bundle_is_group_atomic_and_reuses_the_split_rules(gen_db, gen
 
 
 def test_no_labels_means_no_bundle(gen_db):
-    from ams.generator import build_generator_bundle
+    from vfa.generator import build_generator_bundle
 
     unavailable = {"available": False, "classes": {}, "source": "none", "reason": "no labels"}
     assert build_generator_bundle(gen_db, unavailable) is None
@@ -128,7 +128,7 @@ def test_no_labels_means_no_bundle(gen_db):
 
 # --------------------------------------------------------------------- acceptance rule
 def test_gate_is_fitted_from_validation_and_reports_what_it_achieved():
-    from ams.generator import fit_unknown_gate
+    from vfa.generator import fit_unknown_gate
 
     rng = np.random.default_rng(0)
     n, k = 400, 3
@@ -154,7 +154,7 @@ def test_gate_is_fitted_from_validation_and_reports_what_it_achieved():
 
 
 def test_gate_names_only_known_generators_and_says_unknown_otherwise():
-    from ams.generator import UNKNOWN_LABEL, apply_gate
+    from vfa.generator import UNKNOWN_LABEL, apply_gate
 
     gate = {"min_prob": 0.5, "min_margin": 0.1, "fitted_on": "validation split only",
             "validation_precision_on_accepted": 0.95}
@@ -182,7 +182,7 @@ def test_gate_names_only_known_generators_and_says_unknown_otherwise():
 # --------------------------------------------------------------------- end to end
 def test_pipeline_trains_exports_and_serves_the_generator_model(gen_root, tmp_path):
     """Full chain on the labelled corpus: no retraining at serve time, no invented class."""
-    from ams.pipeline import PipelineConfig, run_training
+    from vfa.pipeline import PipelineConfig, run_training
 
     out = tmp_path / "run"
     cfg = PipelineConfig(
@@ -247,7 +247,7 @@ def test_pipeline_trains_exports_and_serves_the_generator_model(gen_root, tmp_pa
     assert "**trained** on classes" in report and "UNKNOWN" in report
 
     # ---- deployment: the served model identifies a generator from the saved artefacts only
-    from ams.predictor import Detector, PredictorConfig as DetCfg
+    from vfa.predictor import Detector, PredictorConfig as DetCfg
 
     det = Detector(DetCfg(models_dir=cfg.models_dir, enable_gradcam=False, enable_face=False))
     assert det.generator is not None

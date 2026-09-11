@@ -1,1 +1,1 @@
-"""FastAPI front end for the AMS detector (loads models/, serves predictions)."""
+"""Web front end for Visual Forensic AI (loads models/, serves the pages and the API)."""

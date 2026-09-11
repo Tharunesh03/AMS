@@ -1,4 +1,4 @@
-"""AMS · supervised AI-image detector toolkit.
+"""Visual Forensic AI · supervised image-provenance toolkit.
 
 Modules
 -------
@@ -14,7 +14,7 @@ Modules
 ``forensics``    analytical CV face module (not a trained classifier)
 ``predictor``    deployment inference: loads models/, never retrains
 ``reporting``    markdown reports, plots, UI sample export
-``cli``          ``python -m ams {inspect,train,reference,evaluate,predict,demo,serve}``
+``cli``          ``python -m vfa {inspect,train,reference,evaluate,predict,demo,serve}``
 """
 
 __version__ = "0.1.0"

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Analyze · Visual Forensic AI</title>
+<meta name="description" content="Score an image with the trained real-vs-AI-generated classifier and see the measurements behind the verdict." />
+<script>(function(){try{var t=localStorage.getItem('vfa-theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}})();</script>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap"><div class="headrow">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true">◑</span><span class="bname"><b>Visual Forensic AI</b><small>image-provenance analysis</small></span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="/">Overview</a>
+      <a href="/analyze">Analyze</a>
+      <a href="/model">Model card</a>
+      <a href="/metrics">Metrics</a>
+      <a href="/reports">Reports</a>
+    </nav>
+    <button class="theme-btn" data-theme-btn type="button" aria-label="Toggle dark theme">☾</button>
+  </div></div>
+</header>
+<main class="wrap" id="main">
+
+<section class="hero">
+  <p class="kicker">Step 1 of 1 · local, CPU only</p>
+  <h2 style="font-size:1.4rem">Analyze an image</h2>
+  <p class="lede">The file is read, resized and scored in this process, then discarded. Nothing is stored,
+     uploaded to a third party, or judged by a language model.</p>
+  <div class="pillrow" data-status-pills><span class="pill">loading…</span></div>
+</section>
+
+<div class="cols side">
+  <div>
+    <section class="card">
+      <h2>Choose an image</h2>
+      <p class="sub">Drop it here, click to browse, or paste from the clipboard.</p>
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="Upload an image">
+        <input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif" hidden />
+        <div id="dropInner">
+          <div class="glyph" aria-hidden="true">⤓</div>
+          <p><strong>jpg · png · webp · bmp · gif</strong></p>
+          <p class="hint">max <span id="maxSize">8</span> MB · scored on the model's own input grid</p>
+        </div>
+        <div class="preview" id="previewWrap" hidden><img id="preview" alt="the image you selected" /></div>
+      </div>
+      <div class="btnrow">
+        <button id="run" class="btn primary" disabled>Analyze</button>
+        <button id="clear" class="btn ghost" disabled>Clear</button>
+        <span id="status" class="status" role="status"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Or pick a held-out sample</h2>
+      <p class="sub" id="samplesNote">images the model never trained on, taken from the test split</p>
+      <div class="samples" id="samples"><span class="hint">loading…</span></div>
+    </section>
+
+    <section class="card">
+      <h2>Before you trust a verdict</h2>
+      <p class="hint" id="dataNote"></p>
+      <ul class="hint" id="honesty" style="margin-top:.4rem"></ul>
+    </section>
+  </div>
+
+  <div>
+    <section class="card" id="emptyState">
+      <h2>Result</h2>
+      <p class="prose">Nothing analyzed yet. The verdict comes only from the trained model in
+        <code>models/</code>; every number below it is measured on the pixels you supplied.</p>
+      <p class="hint">Pipeline: image → resize + normalize → trained model → probability → decision threshold → verdict → evidence.</p>
+      <p class="hint" style="margin-top:.55rem">Nothing loaded yet? <code>python train.py</code> writes <code>models/</code> and <code>reports/</code> — these pages only render what that run produced, and say so when it has not run.</p>
+    </section>
+
+    <div id="result" hidden>
+      <section class="card">
+        <h2>Verdict</h2>
+        <div class="verdict" id="verdict"><strong>—</strong></div>
+        <div class="gauge">
+          <div class="labels"><span>authentic capture</span><span>AI-generated / synthetic</span></div>
+          <div class="track"><span class="dot" id="probDot"></span><span class="thr" id="thrMark" title="decision threshold"></span></div>
+          <div class="legend">
+            <span>P(generated) <b class="num" id="probVal">—</b></span>
+            <span>threshold <b class="num" id="thrVal">—</b></span>
+            <span>distance from threshold <b class="num" id="marginVal">—</b></span>
+            <span id="timeVal" class="hint"></span>
+          </div>
+        </div>
+        <div class="pillrow" id="warnFlags" style="margin-top:.6rem"></div>
+        <p class="hint" style="margin-top:.5rem">The dot is the probability that the image is generated; the dashed line is the
+          threshold the model was calibrated to on validation data. Left of the line → authentic, right → generated.</p>
+      </section>
+
+      <section class="card">
+        <h2>Why the model called it that</h2>
+        <p class="sub">Measured signals compared with the distribution of authentic captures seen during training.</p>
+        <p class="prose" id="simple"></p>
+        <ul class="evidence" id="headline"></ul>
+        <div id="evTable"></div>
+        <details class="raw"><summary>technical wording and provenance of the explanation</summary><div id="technical" class="prose mono"></div></details>
+      </section>
+
+      <section class="card">
+        <h2>Where the model looked</h2>
+        <p class="sub">Grad-CAM from the deployed network itself — shown only when such a network is deployed.</p>
+        <div id="camNote" class="hint"></div>
+        <div class="figs" id="camImgs"></div>
+        <div id="camTable" style="margin-top:.5rem"></div>
+      </section>
+
+      <section class="card">
+        <h2>Face checks</h2>
+        <p class="sub">An analytical computer-vision module — detection, landmark geometry, consistency. Not a deepfake classifier, and it identifies no people.</p>
+        <div class="caution" id="faceDisclaimer"></div>
+        <div id="faceSummary" style="margin-top:.5rem"></div>
+        <div id="faceList"></div>
+      </section>
+
+      <section class="card">
+        <h2>Generator identification</h2>
+        <p class="sub">A second, separate supervised model. It exists only if the training corpus carried
+     per-generator labels; when the evidence is below its acceptance rule it abstains and reports
+     <code>UNKNOWN</code> instead of naming a generator.</p>
+        <div id="genStatus"></div>
+      </section>
+
+      <section class="card">
+        <h2>Raw measurements</h2>
+        <p class="sub">Exactly what was computed on the model input grid (<span id="sigGrid">—</span> px), before any interpretation.</p>
+        <div id="signalTable"></div>
+        <details class="raw"><summary>full JSON response for this image</summary><pre id="rawJson"></pre></details>
+      </section>
+    </div>
+  </div>
+</div>
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Visual Forensic AI · supervised analysis, CPU only · no external AI-detection API, no LLM judging images, no hard-coded verdicts</span>
+    <span data-model-name>loading model info…</span>
+  </div>
+</footer>
+<script src="/static/common.js"></script>
+<script src="/static/analyze.js"></script>
+</body>
+</html>

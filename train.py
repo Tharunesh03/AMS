@@ -24,7 +24,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from ams.pipeline import PipelineConfig, run_training  # noqa: E402
+from vfa.pipeline import PipelineConfig, run_training  # noqa: E402
 
 
 def _coerce(text: str):
@@ -115,9 +115,9 @@ def main(argv=None) -> int:
     cfg.verbose = not args.quiet
 
     if args.inspect_only:
-        from ams.dataset import ensure_extracted
-        from ams.reporting import write_dataset_report
-        from ams.trainer import build_data
+        from vfa.dataset import ensure_extracted
+        from vfa.reporting import write_dataset_report
+        from vfa.trainer import build_data
 
         ensure_extracted(Path(cfg.root), Path(cfg.archive) if cfg.archive else None)
         db = build_data(Path(cfg.root), Path(cfg.artifacts_dir) / "cache", cache_size=cfg.cache_size,
@@ -127,7 +127,7 @@ def main(argv=None) -> int:
         print(f"wrote {out}")
         return 0
 
-    print(f"[ams] run={cfg.run_name} device={cfg.device} threads={cfg.threads} "
+    print(f"[vfa] run={cfg.run_name} device={cfg.device} threads={cfg.threads} "
           f"classical={cfg.classical} deep={cfg.deep} pretrained={cfg.pretrained}", flush=True)
     result = run_training(cfg)
     sel = result.selected
@@ -148,7 +148,7 @@ def main(argv=None) -> int:
     else:
         print(f"task=generator    NOT TRAINED - {str(gen.get('reason'))[:110]}")
     fm = result.metrics.get("face_model") or {}
-    print(f"face analysis     {fm.get('analytical_cv_module', 'ams.forensics')} "
+    print(f"face analysis     {fm.get('analytical_cv_module', 'vfa.forensics')} "
           f"(trained classifier: {fm.get('trained')}, identity model: {fm.get('identity_model_available')})")
     print(f"models : {Path(cfg.models_dir)}/metrics.json, {Path(cfg.models_dir)}/model_info.json, "
           f"{Path(cfg.models_dir)}/MODEL_CARD.md")

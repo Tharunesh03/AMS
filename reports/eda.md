@@ -35,7 +35,7 @@ The two classes differ measurably in **global tone** and in **high-frequency ene
 ## What the dataset does NOT contain
 
 - generator fingerprinting: **not trained** - the provided dataset carries exactly one label dimension (the real/ai class folders); no per-generator sub-directories and no generator tokens in file names, so generator fingerprinting cannot be trained - it would require inventing labels
-  (the second task is implemented in `ams/generator.py` and runs automatically when such folders exist; nothing was invented to make it possible here)
+  (the second task is implemented in `vfa/generator.py` and runs automatically when such folders exist; nothing was invented to make it possible here)
 - no separate manipulated-face label dimension, so no second face model is trained (see model card)
 - no identity annotations usable at this resolution (pixel-space 1-NN over same-source frames is at chance level)
 

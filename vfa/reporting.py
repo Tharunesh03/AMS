@@ -230,7 +230,7 @@ def write_dataset_report(db, path: Path, seed: Optional[int] = None,
         )
     else:
         lines.append(f"- generator fingerprinting: **not trained** - {generator.get('reason')}")
-        lines.append("  (the second task is implemented in `ams/generator.py` and runs automatically when such "
+        lines.append("  (the second task is implemented in `vfa/generator.py` and runs automatically when such "
                      "folders exist; nothing was invented to make it possible here)")
     lines.append("- no separate manipulated-face label dimension, so no second face model is trained (see model card)")
     lines.append("- no identity annotations usable at this resolution (pixel-space 1-NN over same-source frames is at chance level)")
@@ -345,7 +345,7 @@ def write_comparison_report(
         "face-authenticity model; a second 'deepfake face' classifier on the same two labels would be a duplicate, not evidence. "
     )
     lines.append(
-        "- Face-level analysis is therefore shipped as an **analytical CV module** (`ams.forensics`: face detection, "
+        "- Face-level analysis is therefore shipped as an **analytical CV module** (`vfa.forensics`: face detection, "
         "landmark geometry, visual-consistency checks) and is labelled as such in the UI.\n"
     )
     figs = [p for p in sorted((Path(path).parent / "figures").glob("*.png"))]
@@ -468,7 +468,7 @@ def write_model_card(card: Dict[str, object], path: Path) -> Path:
         lines.append(f"- generator fingerprinting: **not trained** - {g.get('reason')}")
     fm = card.get("face_model") or {}
     lines.append(
-        f"- deepfake face model: **not trained as a classifier** ({fm.get('analytical_cv_module', 'ams.forensics')} "
+        f"- deepfake face model: **not trained as a classifier** ({fm.get('analytical_cv_module', 'vfa.forensics')} "
         f"ships an analytical CV module instead: face detection, landmark geometry, visual-consistency checks; "
         f"identity model: {fm.get('identity_model_available')})"
     )

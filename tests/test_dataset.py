@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ams.dataset import ensure_extracted, scan_dataset
+from vfa.dataset import ensure_extracted, scan_dataset
 from tests.conftest import make_mini_dataset, _write
 
 

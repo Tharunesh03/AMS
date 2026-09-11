@@ -1,7 +1,7 @@
 # Free-tier deploy (Render). The app loads models/ from the repo - no build-time training.
 services:
   - type: web
-    name: ams-ai-detector
+    name: vfa-ai-detector
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
@@ -12,5 +12,5 @@ services:
         value: "3.11"
       - key: OMP_NUM_THREADS
         value: "2"
-      - key: AMS_MAX_UPLOAD_BYTES
+      - key: VFA_MAX_UPLOAD_BYTES
         value: "8388608"

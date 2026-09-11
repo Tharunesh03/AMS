@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Metrics · Visual Forensic AI</title>
+<meta name="description" content="Every candidate model measured on the same held-out split, the selection arithmetic behind the deployment, ablations and calibration." />
+<script>(function(){try{var t=localStorage.getItem('vfa-theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}})();</script>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap"><div class="headrow">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true">◑</span><span class="bname"><b>Visual Forensic AI</b><small>image-provenance analysis</small></span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="/">Overview</a>
+      <a href="/analyze">Analyze</a>
+      <a href="/model">Model card</a>
+      <a href="/metrics">Metrics</a>
+      <a href="/reports">Reports</a>
+    </nav>
+    <button class="theme-btn" data-theme-btn type="button" aria-label="Toggle dark theme">☾</button>
+  </div></div>
+</header>
+<main class="wrap" id="main">
+
+<section class="hero">
+  <p class="kicker">Measured on the held-out split · once per candidate</p>
+  <h2 style="font-size:1.4rem">Metrics &amp; comparison</h2>
+  <p class="lede">Every candidate model, identical splits and preprocessing, one published selection rule.
+     The table is sorted by the deployment score, and the arithmetic behind that score is shown with it.</p>
+  <div class="pillrow" data-status-pills><span class="pill">loading…</span></div>
+</section>
+<p class="hint" style="margin-top:.55rem">Nothing loaded yet? <code>python train.py</code> writes <code>models/</code> and <code>reports/</code> — these pages only render what that run produced, and say so when it has not run.</p>
+
+<section class="card">
+  <h2>All candidates compared</h2>
+  <p class="sub">Test-split metrics, measured latency and artifact size on this machine, and the weighted score.
+     Formula: <code>Final = 0.40·F1 + 0.25·ROC-AUC + 0.15·Accuracy + 0.10·Speed + 0.10·Efficiency</code>.</p>
+  <div id="compare"></div>
+  <div class="note" id="selNote" style="margin-top:.6rem"></div>
+</section>
+
+<div class="cols two">
+  <section class="card">
+    <h2>Selected model in detail</h2>
+    <p class="sub">The complete metric set for the deployed artifact.</p>
+    <div id="selected"></div>
+  </section>
+  <section class="card">
+    <h2>Where it is wrong</h2>
+    <p class="sub">Confusion matrix and curves — accuracy alone hides the shape of the errors.</p>
+    <div id="confusion"></div>
+    <div class="figs" id="confFig"></div>
+  </section>
+</div>
+
+<div class="cols two">
+  <section class="card">
+    <h2>Are the probabilities honest?</h2>
+    <p class="sub">Reliability: predictions grouped into bins, compared with how often that confidence was right.</p>
+    <div id="reliability"></div>
+  </section>
+  <section class="card">
+    <h2>Curves</h2>
+    <p class="sub">Figures written by the same run, straight from <code>reports/figures/</code>.</p>
+    <div class="figs" id="figs1"></div>
+    <div id="curveFigs"></div>
+  </section>
+</div>
+
+<div class="cols two">
+  <section class="card">
+    <h2>Ablations</h2>
+    <p class="sub">One factor changed at a time. Reported for the record, never eligible for selection.</p>
+    <div id="ablations"></div>
+    <div id="ablationNotes"></div>
+  </section>
+  <section class="card">
+    <h2>Tasks the dataset could not support</h2>
+    <p class="sub">Reported as untrainable rather than approximated.</p>
+    <div id="secondary"></div>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Reproducibility record</h2>
+  <p class="sub">Seeds, sizes and versions the run was executed with, straight from <code>models/metrics.json</code>.</p>
+  <div id="repro"></div>
+</section>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <span>Visual Forensic AI · supervised analysis, CPU only · no external AI-detection API, no LLM judging images, no hard-coded verdicts</span>
+    <span data-model-name>loading model info…</span>
+  </div>
+</footer>
+<script src="/static/common.js"></script>
+<script src="/static/metrics.js"></script>
+</body>
+</html>

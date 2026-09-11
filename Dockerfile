@@ -2,12 +2,12 @@
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 OMP_NUM_THREADS=2
-WORKDIR /srv/ams
+WORKDIR /srv/vfa
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-COPY ams/ ./ams/
+COPY vfa/ ./vfa/
 COPY app/ ./app/
 COPY models/ ./models/
 COPY samples/ ./samples/
@@ -16,5 +16,5 @@ COPY configs/ ./configs/
 COPY train.py ./
 
 EXPOSE 8000
-# AMS_MODELS_DIR etc. can be overridden at deploy time.
+# VFA_MODELS_DIR etc. can be overridden at deploy time.
 CMD ["python", "-m", "uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000"]

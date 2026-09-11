@@ -286,7 +286,7 @@ class Detector:
             "margin_over_threshold": round(abs(prob - self.threshold), 6),
             "threshold": round(self.threshold, 4),
             "model": {
-                "name": self.model_info.get("model_name", f"ams-ai-detector-{self.arch}"),
+                "name": self.model_info.get("model_name", f"vfa-ai-detector-{self.arch}"),
                 "architecture": self.arch,
                 "family": self.kind,
                 "input_size": self.input_size,
@@ -334,7 +334,7 @@ class Detector:
                 out["explanation"] = {"error": f"{type(exc).__name__}: {exc}"}
         else:
             out["explanation"] = {
-                "unavailable": "reference statistics missing - run `python -m ams.cli reference` once, then restart the app"
+                "unavailable": "reference statistics missing - run `python -m vfa.cli reference` once, then restart the app"
             }
 
         # saliency (only when the loaded model is convolutional)

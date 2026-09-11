@@ -1,5 +1,5 @@
 {
-  "model_name": "ams-ai-detector-svm_forensic",
+  "model_name": "vfa-ai-detector-svm_forensic",
   "model_version": "0.1.0",
   "task": "binary AI/synthetic image detection (real vs generated)",
   "selected_from": [
@@ -124,7 +124,7 @@
   "test_evaluations": 1,
   "descriptor": "forensic",
   "feature_dim": 698,
-  "load_with": "python -m ams predict <image>   |   from ams.predictor import Detector; Detector(PredictorConfig()).predict_path(...)",
+  "load_with": "python -m vfa predict <image>   |   from vfa.predictor import Detector; Detector(PredictorConfig()).predict_path(...)",
   "training_date": "2026-09-11",
   "dataset": {
     "root": "/home/user/AMS/data",
@@ -175,9 +175,9 @@
   "face_model": {
     "trained": false,
     "requested": true,
-    "reason": "the corpus holds exactly two classes (real / synthetic face crops) and no 'manipulated' label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops themselves and face-level checks are provided by the analytical CV module (ams.forensics: face detection, landmark geometry, visual consistency), which is explicitly NOT a trained deepfake classifier.",
+    "reason": "the corpus holds exactly two classes (real / synthetic face crops) and no 'manipulated' label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops themselves and face-level checks are provided by the analytical CV module (vfa.forensics: face detection, landmark geometry, visual consistency), which is explicitly NOT a trained deepfake classifier.",
     "detector_trained_on_face_crops": true,
     "identity_model_available": false,
-    "analytical_cv_module": "ams.forensics"
+    "analytical_cv_module": "vfa.forensics"
   }
 }

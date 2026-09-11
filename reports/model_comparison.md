@@ -63,7 +63,7 @@ Selection uses the weighted deployment score, not raw accuracy: a model is only 
 ## FACE MODEL
 
 - The corpus is 32x32 face crops with exactly two labels, so the trained detector *is* the face-authenticity model; a second 'deepfake face' classifier on the same two labels would be a duplicate, not evidence. 
-- Face-level analysis is therefore shipped as an **analytical CV module** (`ams.forensics`: face detection, landmark geometry, visual-consistency checks) and is labelled as such in the UI.
+- Face-level analysis is therefore shipped as an **analytical CV module** (`vfa.forensics`: face detection, landmark geometry, visual-consistency checks) and is labelled as such in the UI.
 
 ## Figures
 

@@ -1,4 +1,4 @@
-"""Dataset inspection, validation and caching for the AMS image-authenticity corpus.
+"""Dataset inspection, validation and caching for the image-provenance corpus.
 
 The corpus committed to this repository is ``archive (4).zip`` with the layout::
 
