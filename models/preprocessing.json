@@ -1,0 +1,17 @@
+{
+  "cache_size": 64,
+  "resize_to": 64,
+  "mean": [
+    0.47498644862300826,
+    0.4651575906438107,
+    0.419703365521699
+  ],
+  "std": [
+    0.22958391627232522,
+    0.22933930007989364,
+    0.2593313023889591
+  ],
+  "photometric_for_features": "gray",
+  "feature_size": 64,
+  "augmented_fields": "train only - inference uses resize+normalise"
+}

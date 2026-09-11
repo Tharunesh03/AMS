@@ -1,0 +1,66 @@
+[
+  {
+    "file": "real_0.png",
+    "class": "real",
+    "class_id": 0,
+    "split": "test",
+    "source_path": "REAL/0244 (6).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "real_1.png",
+    "class": "real",
+    "class_id": 0,
+    "split": "test",
+    "source_path": "REAL/0106 (9).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "real_2.png",
+    "class": "real",
+    "class_id": 0,
+    "split": "test",
+    "source_path": "REAL/0207 (9).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "real_3.png",
+    "class": "real",
+    "class_id": 0,
+    "split": "test",
+    "source_path": "REAL/0806 (5).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "fake_0.png",
+    "class": "fake",
+    "class_id": 1,
+    "split": "test",
+    "source_path": "FAKE/199 (2).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "fake_1.png",
+    "class": "fake",
+    "class_id": 1,
+    "split": "test",
+    "source_path": "FAKE/643 (2).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "fake_2.png",
+    "class": "fake",
+    "class_id": 1,
+    "split": "test",
+    "source_path": "FAKE/392 (9).jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  },
+  {
+    "file": "fake_3.png",
+    "class": "fake",
+    "class_id": 1,
+    "split": "test",
+    "source_path": "FAKE/131.jpg",
+    "note": "display copy upscaled x5 from the 64px decode cache; the model sees the 64px grid"
+  }
+]

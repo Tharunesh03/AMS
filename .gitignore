@@ -1,0 +1,19 @@
+# data + generated artifacts (regenerate: `python train.py`); keep models/ and samples/ tracked
+data/
+artifacts/
+models_smoke/
+reports/smoke/
+samples_smoke/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.log
+.DS_Store
+.idea/
+.vscode/

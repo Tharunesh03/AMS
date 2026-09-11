@@ -1,0 +1,59 @@
+# Default experiment configuration for `python train.py`.
+# Any key can be overridden on the CLI, e.g. `python train.py --set deep_ids=[lightcnn_32]`.
+
+root: data
+archive: archive (4).zip          # extracted into root/ if root has no images yet
+artifacts_dir: artifacts
+models_dir: models
+reports_dir: reports
+samples_dir: samples
+
+run_name: full
+seed: 13
+
+# --- data / splits -------------------------------------------------------------
+cache_size: 64              # decode cache grid (sources are 32x32; 64 keeps 2x headroom cheaply)
+feature_size: 64            # grid the forensic descriptor is measured on
+train_frac: 0.70
+val_frac: 0.15              # test = remainder (0.15); stratified by class, atomic per capture group
+photometric: gray           # per-image z-score so global brightness/contrast cannot be the shortcut
+max_images_per_class: null  # set an integer for a quick smoke run
+
+# --- candidates ----------------------------------------------------------------
+classical: true
+deep: true
+pretrained: true            # ImageNet transfer when weights are reachable; recorded honestly when not
+deep_ids: null              # e.g. [lightcnn_32, resnet18_96] to train a subset
+epochs: null                # null = per-preset schedule (see ams/models.py CANDIDATE_PRESETS)
+batch_size: null
+lr: null
+patience: 5                 # early stopping on validation ROC-AUC
+
+# --- runtime -------------------------------------------------------------------
+device: cpu                 # CPU-first by design: free hosting must not require a GPU
+threads: 2
+rebuild_cache: false
+export_samples_n: 4         # demo images written to samples/ for the UI (null/0 disables)
+
+# --- ablations (reported, never eligible for selection) -------------------------
+# Resolution ablation: sources are 32x32, so this measures the cost of upsampling.
+ablations:
+  - id: ablate_lightcnn_64
+    spec: {name: lightcnn, input_size: 64, in_channels: 3, dropout: 0.15, width: 24}
+    epochs: 10
+    batch_size: 128
+    lr: 2.0e-3
+    note: "same lightcnn at 64px input; sources are 32x32 so 64px is an interpolated enlargement, not new detail - measures whether extra input resolution changes anything"
+  # Optional §7 stage, enable when pretrained weights are actually reachable (needs network access):
+  #   - id: ablate_mobilenet_frozen_head
+  #     spec: {name: mobilenet_v3_small, input_size: 64, in_channels: 3, dropout: 0.2, freeze_backbone: true}
+  #     epochs: 6
+  #     batch_size: 96
+  #     lr: 1.0e-3
+  #     note: "frozen ImageNet backbone, head only - the transfer-learning stage the spec asks to start from"
+  - id: ablate_lightcnn_gray
+    spec: {name: lightcnn, input_size: 32, in_channels: 1, dropout: 0.15, width: 24}
+    epochs: 12
+    batch_size: 128
+    lr: 2.0e-3
+    note: "single-channel luminance input - is colour information needed at all?"

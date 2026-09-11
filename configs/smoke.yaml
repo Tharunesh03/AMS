@@ -1,0 +1,16 @@
+# Tiny run used to validate the whole pipeline end-to-end in seconds.
+# Writes to *_smoke directories so it can never overwrite a real production model in models/.
+run_name: smoke
+max_images_per_class: 600
+cache_size: 48
+feature_size: 48
+export_samples_n: 1
+epochs: 2
+deep_ids: [lightcnn_32]
+ablations: []
+photometric: gray
+
+artifacts_dir: artifacts/smoke
+models_dir: models_smoke
+reports_dir: reports/smoke
+samples_dir: samples_smoke

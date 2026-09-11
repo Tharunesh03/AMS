@@ -1,0 +1,52 @@
+{
+  "root": "/home/user/AMS/data",
+  "classes_found": {
+    "fake": 10000,
+    "real": 10000
+  },
+  "labels_available": [
+    "fake",
+    "real"
+  ],
+  "generator_labels_available": [],
+  "n_images": 20000,
+  "n_valid": 20000,
+  "n_corrupt": 0,
+  "n_groups": 2000,
+  "n_duplicate_exact": 38,
+  "n_duplicate_near": 0,
+  "n_duplicate_perceptual_cross_source": 39,
+  "formats": {
+    "JPEG": 20000
+  },
+  "sizes": {
+    "32x32": 20000
+  },
+  "channels": {
+    "rgb": 19639,
+    "gray": 361
+  },
+  "class_balance": {
+    "fake": 0.5,
+    "real": 0.5
+  },
+  "minority_ratio": 1.0,
+  "per_class_stats": {
+    "fake": {
+      "n": 10000,
+      "gray_mean": 108.9,
+      "gray_std": 50.66,
+      "laplacian_var_median": 3509.3,
+      "bytes_median": 928.0
+    },
+    "real": {
+      "n": 10000,
+      "gray_mean": 121.51,
+      "gray_std": 49.69,
+      "laplacian_var_median": 2092.1,
+      "bytes_median": 924.0
+    }
+  },
+  "rejected": [],
+  "notes": []
+}

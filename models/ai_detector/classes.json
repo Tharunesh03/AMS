@@ -1,0 +1,19 @@
+{
+  "task": "ai_detector",
+  "classes": [
+    "real",
+    "fake"
+  ],
+  "label_map": {
+    "real": 0,
+    "fake": 1
+  },
+  "positive_class": "fake",
+  "positive_index": 1,
+  "n_classes": 2,
+  "binary": true,
+  "labels_meaning": {
+    "0": "authentic / camera-captured",
+    "1": "ai_generated or synthetic"
+  }
+}

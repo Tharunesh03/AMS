@@ -1,0 +1,183 @@
+{
+  "model_name": "ams-ai-detector-svm_forensic",
+  "model_version": "0.1.0",
+  "task": "binary AI/synthetic image detection (real vs generated)",
+  "selected_from": [
+    "svm_forensic",
+    "lightcnn_32",
+    "logreg_forensic",
+    "gbdt_forensic",
+    "mobilenet_v3_small_64",
+    "efficientnet_b0_64",
+    "resnet18_64",
+    "knn_forensic",
+    "rf_forensic",
+    "logreg_pixels",
+    "rf_pixels"
+  ],
+  "selection_reason": "deployment score 0.9275 from F1=0.8909, ROC-AUC=0.9513, accuracy=0.8887, 0.2 ms/image, 0.03 MB; beats runner-up lightcnn_32 (0.8615) by 0.0660.",
+  "architecture": "svm_forensic",
+  "framework": "scikit-learn",
+  "params": {
+    "model": "svm",
+    "descriptor": "forensic",
+    "C": 2.0,
+    "loss": "squared_hinge",
+    "margin_scores_mapped_to_p": "sigmoid",
+    "feature_dim": 698,
+    "train_samples": 14000
+  },
+  "image_size": 64,
+  "classes": [
+    "real",
+    "fake"
+  ],
+  "n_classes": 2,
+  "training_images": 14000,
+  "validation_images": 3000,
+  "test_images": 3000,
+  "metrics": {
+    "n": 3000,
+    "pos_rate": 0.5,
+    "accuracy": 0.8886666666666667,
+    "balanced_accuracy": 0.8886666666666667,
+    "precision": 0.8732394366197183,
+    "recall": 0.9093333333333333,
+    "f1": 0.8909209666884389,
+    "specificity": 0.868,
+    "false_positive_rate": 0.132,
+    "false_negative_rate": 0.09066666666666667,
+    "mcc": 0.7779982007789525,
+    "threshold": 0.4821135216450504,
+    "tp": 1364,
+    "fp": 198,
+    "tn": 1302,
+    "fn": 136,
+    "confusion_matrix": [
+      [
+        1302,
+        198
+      ],
+      [
+        136,
+        1364
+      ]
+    ],
+    "roc_auc": 0.9512746666666666,
+    "pr_auc": 0.938659477337999,
+    "average_precision": 0.938659477337999,
+    "log_loss": 0.37327750886494565,
+    "brier": 0.10873768335203746,
+    "eer": 0.11099999999999997,
+    "eer_threshold": 0.5034300520270164
+  },
+  "threshold": 0.4821135216450504,
+  "model_size_mb": 0.0245,
+  "inference_ms_per_image": 0.226,
+  "pretrained_backbone": null,
+  "pretrained_requested": null,
+  "pretrained_note": null,
+  "transfer_learning": {
+    "requested": true,
+    "deep_candidates": 6,
+    "weights_applied_for": [],
+    "trained_from_scratch": [
+      "ablate_lightcnn_64",
+      "ablate_lightcnn_gray",
+      "efficientnet_b0_64",
+      "lightcnn_32",
+      "mobilenet_v3_small_64",
+      "resnet18_64"
+    ],
+    "frozen_backbone_requested_for": [],
+    "frozen_backbone_applied_for": [],
+    "trainable_parameter_ratios": {
+      "ablate_lightcnn_64": [
+        473785,
+        473785
+      ],
+      "ablate_lightcnn_gray": [
+        473353,
+        473353
+      ],
+      "efficientnet_b0_64": [
+        4008829,
+        4008829
+      ],
+      "lightcnn_32": [
+        473785,
+        473785
+      ],
+      "mobilenet_v3_small_64": [
+        927585,
+        927585
+      ],
+      "resnet18_64": [
+        11177025,
+        11177025
+      ]
+    },
+    "note": "transfer learning was requested but the ImageNet weight host was unreachable from this environment (architecture has no published ImageNet weights; trained from scratch by design ; requested but unreachable (URLError: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:992)>); from scratch); freezing a randomly initialised backbone would only train a head on random features, so no arm was frozen and every deep candidate trained from scratch with all layers trainable. This is recorded per candidate in pretrained_note rather than hidden."
+  },
+  "threshold_policy": "max-F1 on the validation split; midpoint between distinct validation scores",
+  "eval_protocol": "train on train, threshold + early stopping on validation, test evaluated once",
+  "test_evaluations": 1,
+  "descriptor": "forensic",
+  "feature_dim": 698,
+  "load_with": "python -m ams predict <image>   |   from ams.predictor import Detector; Detector(PredictorConfig()).predict_path(...)",
+  "training_date": "2026-09-11",
+  "dataset": {
+    "root": "/home/user/AMS/data",
+    "classes_found": {
+      "fake": 10000,
+      "real": 10000
+    },
+    "n_valid": 20000,
+    "n_corrupt": 0,
+    "class_balance": {
+      "fake": 0.5,
+      "real": 0.5
+    },
+    "source_groups": 2000,
+    "near_duplicates": 0,
+    "perceptual_duplicates_across_sources": 39,
+    "formats": {
+      "JPEG": 20000
+    },
+    "sizes": {
+      "32x32": 20000
+    }
+  },
+  "known_limitations": [
+    "Trained on 32x32 upscaled crops of one corpus: it learns the artifacts of *this* data (compression, texture, spectrum), not a universal notion of 'AI-generated'.",
+    "Performance degrades on generators, resolutions, cameras and post-processing pipelines that are not represented in the training set.",
+    "Heavy re-compression, screenshots, resizing, watermarks and upscaling change the measured evidence and can flip predictions.",
+    "Class balance here is 50/50; in production the real rate is far higher, so the false-positive count matters more than accuracy suggests.",
+    "The crops are faces at very low resolution: identity is not recoverable and no identity model was trained.",
+    "In this corpus the two classes differ measurably in sharpness and tone, which is a shortcut a classifier can exploit instead of learning synthesis artefacts. Photometric statistics are per-image z-scored in both the descriptor and the model input to limit it, and the raw-pixel baselines plus the colour/photometric ablation in reports/model_comparison.md quantify how much of the performance that shortcut could explain; a residual correlation cannot be excluded."
+  ],
+  "honesty": [
+    "Prediction is probabilistic and is not proof of image origin.",
+    "Generator identification is limited to patterns represented in the training dataset.",
+    "Performance may decrease on unseen generators.",
+    "Image editing, compression, screenshots and resizing can affect predictions.",
+    "Face analysis does not identify people.",
+    "No detector is 100% accurate and this one makes no such claim: an individual prediction can be wrong, and 'authentic' does not prove human authorship."
+  ],
+  "generator_classifier": {
+    "name": "generator",
+    "available": false,
+    "classes": {},
+    "n_classes": 0,
+    "reason": "the provided dataset carries exactly one label dimension (the real/ai class folders); no per-generator sub-directories and no generator tokens in file names, so generator fingerprinting cannot be trained - it would require inventing labels",
+    "source": "none"
+  },
+  "face_model": {
+    "trained": false,
+    "requested": true,
+    "reason": "the corpus holds exactly two classes (real / synthetic face crops) and no 'manipulated' label dimension, so a separate REAL-FACE vs DEEPFAKE-FACE classifier would be a copy of the AI detector with a new name. Rather than duplicate it, the detector is trained on the face crops themselves and face-level checks are provided by the analytical CV module (ams.forensics: face detection, landmark geometry, visual consistency), which is explicitly NOT a trained deepfake classifier.",
+    "detector_trained_on_face_crops": true,
+    "identity_model_available": false,
+    "analytical_cv_module": "ams.forensics"
+  }
+}

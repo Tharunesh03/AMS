@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMS · AI Image Detector</title>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">◑</span>
+    <div>
+      <h1>AMS <span>AI Image Detector</span></h1>
+      <p class="sub">Supervised REAL vs AI-GENERATED classification · Grad-CAM saliency · analytical face module</p>
+    </div>
+  </div>
+  <div class="badges" id="modelBadges">
+    <span class="badge loading">loading model…</span>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- ------------------------- input column ------------------------- -->
+  <section class="panel input-col">
+    <h2>1 · Analyse an image</h2>
+    <div id="drop" class="drop" tabindex="0" role="button" aria-label="Upload an image">
+      <input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif" hidden />
+      <div class="drop-inner">
+        <div class="drop-icon" aria-hidden="true">⤓</div>
+        <p><strong>Drop an image</strong>, click to browse, or paste from clipboard</p>
+        <p class="hint">jpg / png / webp / bmp / gif · max <span id="maxSize">8</span> MB · analysed locally on CPU, nothing is stored</p>
+      </div>
+      <div class="preview-wrap" id="previewWrap" hidden>
+        <img id="preview" alt="selected image" />
+      </div>
+    </div>
+    <div class="actions">
+      <button id="run" class="primary" disabled>Analyse image</button>
+      <button id="clear" class="ghost" disabled>Clear</button>
+      <span id="status" class="status" role="status"></span>
+    </div>
+
+    <h3>Samples from the dataset</h3>
+    <div id="samples" class="samples"><span class="hint">loading…</span></div>
+    <p class="hint" id="samplesNote"></p>
+
+    <div class="notice">
+      <strong>Read this first.</strong>
+      <ul id="honesty"><li>Prediction is probabilistic and is not proof of image origin.</li></ul>
+      <p class="hint" id="dataNote"></p>
+    </div>
+  </section>
+
+  <!-- ------------------------ result column ------------------------ -->
+  <section class="panel result-col">
+    <div id="empty" class="empty">
+      <h2>Result</h2>
+      <p>Upload an image (or pick a sample). The verdict comes only from the trained model in <code>models/</code>;
+         evidence, saliency and face checks are derived from measured pixels.</p>
+      <div class="flow">
+        <span>image</span>→<span>preprocess</span>→<span>trained model</span>→<span>probability</span>→<span>threshold</span>→<span>verdict</span>→<span>evidence</span>
+      </div>
+    </div>
+
+    <div id="result" hidden>
+      <div class="verdict-row">
+        <div id="verdict" class="verdict">—</div>
+        <div class="probbox">
+          <div class="problabels"><span>authentic</span><span id="probTxt">P(synthetic)</span><span>synthetic</span></div>
+          <div class="probbar"><div class="probfill" id="probFill"></div><div class="thr" id="thrMark" title="decision threshold"></div></div>
+          <div class="probmeta"><span id="probRaw"></span><span id="confRaw"></span><span id="timeRaw"></span></div>
+          <div class="flags" id="warnFlags"></div>
+        </div>
+      </div>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="evidence" role="tab">Evidence</button>
+        <button class="tab" data-tab="saliency" role="tab">Saliency</button>
+        <button class="tab" data-tab="face" role="tab">Face analysis</button>
+        <button class="tab" data-tab="generator" role="tab">Generator ID</button>
+        <button class="tab" data-tab="signals" role="tab">Raw signals</button>
+      </nav>
+
+      <div class="tabpane active" id="tab-evidence">
+        <h3>Headline evidence</h3>
+        <ul id="headline" class="evidence"></ul>
+        <h3>Simple explanation</h3>
+        <p id="simple" class="prose"></p>
+        <h3>Technical explanation</h3>
+        <p id="technical" class="prose mono"></p>
+        <h3>All measured signals vs authentic reference</h3>
+        <table class="tbl" id="evTable"></table>
+      </div>
+
+      <div class="tabpane" id="tab-saliency">
+        <div id="camNote" class="hint"></div>
+        <div class="imgs" id="camImgs"></div>
+        <table class="tbl" id="camTable"></table>
+      </div>
+
+      <div class="tabpane" id="tab-face">
+        <div id="faceDisclaimer" class="warn-inline"></div>
+        <table class="tbl" id="faceSummary"></table>
+        <div id="faceList"></div>
+      </div>
+
+      <div class="tabpane" id="tab-generator">
+        <p class="hint">This tab reflects a <em>second</em> supervised model that can only exist when the training
+        corpus carries per-generator labels (folders such as <code>data/FAKE/stable_diffusion/</code>). When they are
+        absent, nothing is invented: the panel says so. Even when trained, it names only generators it was shown —
+        an unfamiliar one comes back as <code>UNKNOWN</code>, never as the closest known class.</p>
+        <div id="genStatus"></div>
+      </div>
+
+      <div class="tabpane" id="tab-signals">
+        <table class="tbl" id="signalTable"></table>
+        <p class="hint">Signals are computed on the model input grid (<span id="sigGrid"></span> px) after per-image z-scoring, then compared with the training-split reference distribution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------ model / experiments ------------------------ -->
+  <section class="panel wide">
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab2="card" role="tab">Model card</button>
+      <button class="tab" data-tab2="compare" role="tab">Model comparison</button>
+      <button class="tab" data-tab2="eval" role="tab">Test evaluation</button>
+      <button class="tab" data-tab2="reports" role="tab">Reports</button>
+    </nav>
+
+    <div class="tabpane active" id="pane-card">
+      <div class="card" id="card"></div>
+    </div>
+
+    <div class="tabpane" id="pane-compare">
+      <p class="hint">Every candidate model trained on identical splits. Final score = 0.40·F1 + 0.25·ROC-AUC + 0.15·Accuracy + 0.10·Speed + 0.10·Efficiency.</p>
+      <table class="tbl" id="compareTable"></table>
+      <div id="selReason" class="reason"></div>
+    </div>
+
+    <div class="tabpane" id="pane-eval">
+      <table class="tbl" id="evalTable"></table>
+      <p class="hint">Metrics come from <code>models/metrics.json</code>, produced by <code>python train.py</code> / <code>python -m ams evaluate</code>. The test split is evaluated once per model, after threshold selection on validation.</p>
+    </div>
+
+    <div class="tabpane" id="pane-reports">
+      <div class="reports" id="reportLinks"></div>
+      <div id="reportView" class="reportview md">pick a report…</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>AMS AI Image Detector · supervised learning on the repository dataset · CPU inference · no external AI API, no LLM, no hardcoded verdicts.</span>
+  <span id="footerModel"></span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

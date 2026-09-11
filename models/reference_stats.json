@@ -1,0 +1,236 @@
+{
+  "generated_at": "2026-09-11T09:55:45",
+  "estimated_on": "training split only (no validation/test images used)",
+  "authentic_class": "real",
+  "synthetic_class": "fake",
+  "grid": 64,
+  "photometric": "gray",
+  "signals": [
+    {
+      "key": "hp_std",
+      "label": "micro-texture energy",
+      "unit": "relative",
+      "meaning": "sensor noise and skin/pore detail vs synthesised smoothness"
+    },
+    {
+      "key": "noise_floor",
+      "label": "residual noise floor",
+      "unit": "relative",
+      "meaning": "second-order residual energy in flat regions"
+    },
+    {
+      "key": "block_v",
+      "label": "vertical 8px grid energy",
+      "unit": "ratio",
+      "meaning": "JPEG / VAE decoding block structure"
+    },
+    {
+      "key": "block_h",
+      "label": "horizontal 8px grid energy",
+      "unit": "ratio",
+      "meaning": "JPEG / VAE decoding block structure"
+    },
+    {
+      "key": "spec_peak",
+      "label": "frequency-spectrum anomaly",
+      "unit": "deviation",
+      "meaning": "peaks/voids in the radial spectrum typical of upsampled generations"
+    },
+    {
+      "key": "lbp_entropy",
+      "label": "local micro-pattern diversity",
+      "unit": "nats",
+      "meaning": "diversity of local binary patterns (texture complexity)"
+    },
+    {
+      "key": "edge_asym",
+      "label": "edge-direction balance",
+      "unit": "ratio",
+      "meaning": "anisotropy between horizontal and vertical edge energy"
+    },
+    {
+      "key": "contrast",
+      "label": "tonal contrast",
+      "unit": "relative",
+      "meaning": "global contrast after per-image normalisation (reported for context only)"
+    },
+    {
+      "key": "hog_diag",
+      "label": "diagonal-gradient concentration",
+      "unit": "share",
+      "meaning": "share of gradient energy in diagonal orientation bins"
+    },
+    {
+      "key": "luma_kurtosis",
+      "label": "tonal-distribution kurtosis",
+      "unit": "ratio",
+      "meaning": "tailedness of the brightness histogram; very peaked or very flat histograms are common in synthesised faces that lack sensor tonal spread"
+    }
+  ],
+  "per_class": {
+    "real": {
+      "hp_std": {
+        "n": 7000,
+        "mean": 0.0673452287835202,
+        "std": 0.019711199579989583,
+        "median": 0.06537607312202454,
+        "q01": 0.03077001977711916,
+        "q99": 0.12345333002507691
+      },
+      "noise_floor": {
+        "n": 7000,
+        "mean": 0.03352817526805614,
+        "std": 0.010624215123531861,
+        "median": 0.03220776095986366,
+        "q01": 0.015107772666960954,
+        "q99": 0.06582354955375197
+      },
+      "block_v": {
+        "n": 7000,
+        "mean": 0.16831795311922906,
+        "std": 0.13551885778792064,
+        "median": 0.17222728580236435,
+        "q01": -0.2078241515159607,
+        "q99": 0.46892982929945026
+      },
+      "block_h": {
+        "n": 7000,
+        "mean": 0.15663506019932433,
+        "std": 0.14469564462039328,
+        "median": 0.16135332733392715,
+        "q01": -0.2512205851078034,
+        "q99": 0.5019996893405916
+      },
+      "spec_peak": {
+        "n": 7000,
+        "mean": 2.8331455985307694,
+        "std": 0.2006431807451962,
+        "median": 2.837077498435974,
+        "q01": 2.335610554218292,
+        "q99": 3.2751263570785523
+      },
+      "lbp_entropy": {
+        "n": 7000,
+        "mean": 3.5565506854738507,
+        "std": 0.11571514207081324,
+        "median": 3.580201268196106,
+        "q01": 3.1335638260841367,
+        "q99": 3.715262441635132
+      },
+      "edge_asym": {
+        "n": 7000,
+        "mean": -0.13641033592278312,
+        "std": 0.31382707023648065,
+        "median": -0.11530666642366705,
+        "q01": -0.9516707316609472,
+        "q99": 0.5475502844849228
+      },
+      "contrast": {
+        "n": 7000,
+        "mean": 0.9182748146419014,
+        "std": 0.10832538940796671,
+        "median": 0.9557776749134064,
+        "q01": 0.48680795073509214,
+        "q99": 1.0223098433017732
+      },
+      "hog_diag": {
+        "n": 7000,
+        "mean": 0.41779740493638173,
+        "std": 0.0270690677159154,
+        "median": 0.4187881052494049,
+        "q01": 0.3468071120977402,
+        "q99": 0.48491320222616197
+      },
+      "luma_kurtosis": {
+        "n": 7000,
+        "mean": -0.037049064704350064,
+        "std": 2.0347215508975642,
+        "median": -0.5245254039764404,
+        "q01": -1.6407819759845734,
+        "q99": 7.573048315048218
+      }
+    },
+    "fake": {
+      "hp_std": {
+        "n": 7000,
+        "mean": 0.07803849026055208,
+        "std": 0.020193121684512528,
+        "median": 0.07652181014418602,
+        "q01": 0.03787052944302559,
+        "q99": 0.1325467358529568
+      },
+      "noise_floor": {
+        "n": 7000,
+        "mean": 0.04111023061097201,
+        "std": 0.011231824725799673,
+        "median": 0.04006115533411503,
+        "q01": 0.01974460856989026,
+        "q99": 0.07205603957176208
+      },
+      "block_v": {
+        "n": 7000,
+        "mean": 0.19600905163941856,
+        "std": 0.1388981458857037,
+        "median": 0.19588776677846909,
+        "q01": -0.1613032814860344,
+        "q99": 0.5442294281721118
+      },
+      "block_h": {
+        "n": 7000,
+        "mean": 0.1846834819210448,
+        "std": 0.17975360205722865,
+        "median": 0.18881619721651077,
+        "q01": -0.342173171043396,
+        "q99": 0.6413430070877082
+      },
+      "spec_peak": {
+        "n": 7000,
+        "mean": 2.8532235879557475,
+        "std": 0.1980919061720242,
+        "median": 2.8709137439727783,
+        "q01": 2.27284898519516,
+        "q99": 3.2463619804382327
+      },
+      "lbp_entropy": {
+        "n": 7000,
+        "mean": 3.466069308110646,
+        "std": 0.18118966059239272,
+        "median": 3.510425090789795,
+        "q01": 2.8430980753898623,
+        "q99": 3.7006879091262816
+      },
+      "edge_asym": {
+        "n": 7000,
+        "mean": -0.35941693888937637,
+        "std": 0.43541017401832277,
+        "median": -0.3154726492145403,
+        "q01": -1.4823638311154563,
+        "q99": 0.5351678179918412
+      },
+      "contrast": {
+        "n": 7000,
+        "mean": 0.8907105437176568,
+        "std": 0.11504657853122821,
+        "median": 0.9258205890655518,
+        "q01": 0.519496448636055,
+        "q99": 1.0105817246437074
+      },
+      "hog_diag": {
+        "n": 7000,
+        "mean": 0.4108771924631936,
+        "std": 0.034631811106211226,
+        "median": 0.41511644423007965,
+        "q01": 0.31437641859054566,
+        "q99": 0.47941130042076113
+      },
+      "luma_kurtosis": {
+        "n": 7000,
+        "mean": 0.0902738778250558,
+        "std": 2.1565597025097474,
+        "median": -0.5583158731460571,
+        "q01": -1.6086340534687043,
+        "q99": 9.040085115432749
+      }
+    }
+  }
+}
